@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3"></script>
+    <link rel="stylesheet" href="main.css">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');</style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://kit.fontawesome.com/d4b0adbd70.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <h1 id="loading">Loading...</h1>
+
+<div id="app">
+
+    
+    <nav id="nav">
+        <img src="logo.png" alt="logo">
+        <input @keyup="searchProduct" v-model="searchQuery" type="search" placeholder="Search for items">
+        <button @click="cartButton" id="keranjang">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <div id="total">{{ cart.length }}</div>
+        </button>
+        <button @click="likeButton" id="like">
+            <i class="fa-regular fa-heart"></i>
+            <div id="total">1</div>
+        </button>
+        <button id="logoutLink" onclick="logOut()">log out</button>
+        <button @click="toUserInfo" @mouseover="userInfo" @mouseout="userInfoNo" id="account">
+            <i class="fa-solid fa-user"></i>
+        </button>
+        <div class="wrapper">
+            <div v-show="userInfoShow" id="user-info"></div>
+        </div>
+        <a id="loginLink" href="login.html" class="login">Login</a>
+        <a id="signinLink" href="signin.html" class="signin">Sign In</a>
+        <select class="leanguage" name="" id="">
+            <option value="">EN</option>
+        </select>
+    </nav>
+
+    <h1 id="loginRequired" class="login-required">Login Required</h1>
+
+    <main v-if="mainPage === true" id="main">
+
+        <header class="main-header">
+            <div class="shop-now-container">
+                <h2>Ready to declutter your closet?</h2>
+                <a class="shop-now" href="all-product.html">Shop Now</a>
+            </div>
+        </header>
+
+        <div class="popular-items-container">
+            <router-link @click.native="detail" v-for="(p, index) in popularItems" :key="index" :to="'/detail/' + p.id" style="color: black;" @click="detail(p.id)" class="popular-items">
+                <img style="width: 200px; height: 170px; object-fit: cover;" :src="p.img" alt="">
+                <div class="price">RP {{ p.price }}</div>
+                <p class="product-name"> {{ p.name }} </p>
+                <div style="display: flex; width: 80%; opacity: 0.5; margin-left: 5px; font-size: 12px;">
+                    <p>8 / m</p>
+                    <p style="margin-left: auto;"><i class="fa-regular fa-heart"></i> 12</p>
+                </div>
+            </router-link>
+            <a class="see-all" href="all-product.html">See All Product</a>
+        </div>
+
+        <div class="shop-by-brands-container">
+            <button v-for="s in shopByBrands" class="shop-by-brands" @click="filterByBrands(s)">{{ s }}</button>
+        </div>
+
+        <div class="popular-items-container new-product-container">
+            <router-link @click.native="detail" v-for="(p, index) in newProduct" :key="index" :to="'/detail/' + p.id" style="color: black;" class="popular-items new-product">
+                <img style="width: 200px; height: 170px; object-fit: cover;" :src="p.img" alt="">
+                <div class="price">RP {{ p.price }}</div>
+                <p class="product-name">{{ p.name }}</p>
+                <div style="display: flex; width: 80%; opacity: 0.5; margin-left: 5px; font-size: 12px;">
+                    <p>8 / m</p>
+                    <p style="margin-left: auto;"><i class="fa-regular fa-heart"></i> 12</p>
+                </div>
+            </router-link>
+            <a class="see-all" href="all-product.html">See All Product</a>
+        </div>
+
+    </main>
+
+    <router-view class="router-view" v-if="productDetailRouter === true" :product="product"></router-view>
+
+    <div v-if="searchResultView == true" id="search-result-view">
+        <router-link @click.native="detail" v-for="(p, index) in filteredProducts" :key="index" :to="'/detail/' + p.id" style="color: black;" @click="detail(p.id)" class="popular-items">
+            <img style="width: 200px; height: 170px; object-fit: cover;" :src="p.img" alt="">
+            <div class="price">RP {{ p.price }}</div>
+            <p class="product-name"> {{ p.name }} </p>
+            <div style="display: flex; width: 80%; opacity: 0.5; margin-left: 5px; font-size: 12px;">
+                <p>8 / m</p>
+                <p style="margin-left: auto;"><i class="fa-regular fa-heart"></i> 12</p>
+            </div>
+        </router-link>
+    </div>
+
+    <button @click="backToHome" style="background-color: transparent; border: none; color: grey; margin-left: 25px; font-size: 25px;"><i class="fa-solid fa-arrow-left"></i></button style="background-color: transparent; border: none; color: grey; margin-left: 25px; font-size: 25px;">
+
+    <div v-if="searchResultView == true" id="search-result-view">
+        <router-link @click.native="detail" v-for="(p, index) in shopByBrandsDetail" :key="index" :to="'/detail/' + p.id" style="color: black;" @click="detail(p.id)" class="popular-items">
+            <img style="width: 200px; height: 170px; object-fit: cover;" :src="p.img" alt="">
+            <div class="price">RP {{ p.price }}</div>
+            <p class="product-name"> {{ p.name }} </p>
+            <div style="display: flex; width: 80%; opacity: 0.5; margin-left: 5px; font-size: 12px;">
+                <p>8 / m</p>
+                <p style="margin-left: auto;"><i class="fa-regular fa-heart"></i> 12</p>
+            </div>
+        </router-link>
+    </div>
+
+    <!-- <input id="inp" type="text">
+    <button onclick="submitInp()">Submit</button> -->
+
+    <footer>
+
+        <div class="ul-container">
+
+            <ul type="none" class="vintage">
+                <li>Vintage</li>
+                <li><a href="">About us</a></li>
+                <li><a href="">Sustainability</a></li>
+                <li><a href="">Blog</a></li>
+                <li><a href="">Advertising</a></li>
+            </ul>
+
+            <ul type="none" class="discover">
+                <li>Discover</li>
+                <li><a href="">How it works</a></li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Info board</a></li>
+                <li><a href="">Mobile apps</a></li>
+            </ul>
+
+            <ul type="none" class="help">
+                <li>Help</li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Buying</a></li>
+                <li><a href="">Trust & safety</a></li>
+            </ul>
+
+            <ul type="none" class="community">
+                <li>Community</li>
+                <li><a href="">Forum</a></li>
+            </ul>
+
+        </div>
+
+        <div class="social-media-container">
+            <a href=""><i class="fa-brands fa-whatsapp"></i></a>
+            <a href=""><i class="fa-brands fa-instagram"></i></a>
+            <a href=""><i class="fa-brands fa-linkedin"></i></a>
+            <p><i class="fa-regular fa-copyright"></i> Vintage 2023</p>
+        </div>
+
+    </footer>
+    
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

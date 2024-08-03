@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3"></script>
+    <link rel="stylesheet" href="main.css">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');</style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://kit.fontawesome.com/d4b0adbd70.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <h1 id="loading">Loading...</h1>
+
+    <div id="order-modal-container">
+        <div id="order-modal">
+            <img src="product_img/order img.png" alt="">
+            <h4>Order #ORD-89123-823</h4>
+            <h4>Placed Succesfully</h4>
+            <p>Thank you for do online shopping at Vintage. You can track and see yout order on transaction history menu</p>
+            <button onclick="continueShopping()">Continue Shopping</button>
+            <button onclick="goToHistory()">Go to Hostory Transaction</button>
+        </div>
+    </div>
+
+<div id="app">
+    
+    <nav>
+        <img src="logo.png" alt="logo">
+        <select style="margin-left: 50%" class="leanguage" name="" id="">
+            <option value="">EN</option>
+        </select>
+    </nav>
+
+    <div class="main-order-container">
+
+
+        <div class="order-container">
+
+            <div class="order">
+                <p class="order-title">Order</p>
+                <div id="order-product" v-for="o in orderDetail" class="order-product">
+                    <img style="width: 50px; height: 50px; object-fit: cover; border-radius: 3px;" :src="o.img" alt="">
+                    <div class="main-order-detail">
+                        <p style="opacity: 1;">{{ o.name }}</p>
+                        <p>8 / M</p>
+                        <p style="opacity: 1;">{{ o.price }}</p>
+                    </div>
+                    <div class="order-qty">1X</div>
+                </div>
+            </div>
+
+            <div class="address">
+                <p class="order-title">Address</p>
+                <div div class="order-detail">
+                    <img style="width: 50px; height: 50px; object-fit: cover; margin-right: 20px;" src="product_img/address img.png" alt="">
+                    <div>
+                        <h4>Pt Timedoor Indonesia</h4>
+                        <p>Jl. tukad Yeh Aya IX No.46, Renon, Denpasar Selatan, Kota Denpasar, Bali 80226</p>    
+                    </div>
+                </div>
+            </div>
+
+            <div class="delivery">
+                <p class="order-title">Delivery Detail</p>
+                <div div class="order-detail">
+                    <img style="width: 50px; height: 50px; object-fit: cover; margin-right: 20px;"  src="product_img/shipping img.png" alt="">
+                    <div>
+                        <h4>Fedex Express Shipping</h4>
+                        <p>Jl. tukad Yeh Aya IX No.46, Renon, Denpasar Selatan, Kota Denpasar, Bali 80226</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment">
+                <p class="order-title">Payment Method</p>
+                <div class="order-detail">
+                    <img style="width: 50px; height: 25px; object-fit: cover; margin-right: 20px;" src="product_img/visa img.png" alt="">
+                    <div>
+                        <h4>0819283210323</h4>
+                        <p>23/12 123</p>
+                        <p><i class="fa-regular fa-credit-card"></i> Jack Daniel Arya</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="background-color: white; border: none;" class="order-summary-container">
+            <div style="display: flex;" class="order-summary">
+                <h4>Order Summary</h4>
+                <h4 style="margin-left: auto;" id="total price">{{ totalPrice }}</h4>
+            </div>
+            <div style="opacity: 0.5; display: flex; font-size: 12px; border-bottom: 2px solid rgb(0, 0, 0, 0.25); padding-bottom: 10px;" class="shipping-fee">
+                <div>{{ cart.length }} Items</div>
+                <div style="margin-left: auto;">No include shipping fee</div>
+            </div>
+            <button @click="orderButton"><b>Order ({{ cart.length }})</b></button>
+        </div>
+
+    </div>
+
+    <footer>
+
+        <div class="ul-container">
+
+            <ul type="none" class="vintage">
+                <li>Vintage</li>
+                <li><a href="">About us</a></li>
+                <li><a href="">Sustainability</a></li>
+                <li><a href="">Blog</a></li>
+                <li><a href="">Advertising</a></li>
+            </ul>
+
+            <ul type="none" class="discover">
+                <li>Discover</li>
+                <li><a href="">How it works</a></li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Info board</a></li>
+                <li><a href="">Mobile apps</a></li>
+            </ul>
+
+            <ul type="none" class="help">
+                <li>Help</li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Buying</a></li>
+                <li><a href="">Trust & safety</a></li>
+            </ul>
+
+            <ul type="none" class="community">
+                <li>Community</li>
+                <li><a href="">Forum</a></li>
+            </ul>
+
+        </div>
+
+        <div class="social-media-container">
+            <a href=""><i class="fa-brands fa-whatsapp"></i></a>
+            <a href=""><i class="fa-brands fa-instagram"></i></a>
+            <a href=""><i class="fa-brands fa-linkedin"></i></a>
+            <p><i class="fa-regular fa-copyright"></i> Vintage 2023</p>
+        </div>
+
+    </footer>
+    
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

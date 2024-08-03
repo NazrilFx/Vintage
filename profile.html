@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');</style>
+    <script src="https://kit.fontawesome.com/d4b0adbd70.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.5.1/dist/vue-router.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+</head>
+<body>
+    <div id="app">
+
+        <nav>
+            <img style="margin-right: 50%;" src="logo.png" alt="logo">
+            <select class="leanguage" name="" id="">
+                <option value="">EN</option>
+            </select>
+        </nav>
+    
+    <div id="settingContainer">
+
+        <div id="setting">
+            <a style="font-size: 20px; margin-left: 10px; color: black;" href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+            <h1 style="margin-top: 25px;">Setting</h1>
+            <ul type="none">
+                <li><button id="profile" @click="settings('profileDetails')">Profil details</button></li>
+                <li><button id="password" @click="settings('changePassword')">Change password</button></li>
+                <li><button  id="transaction" @click="settings('transactionHistory')">Transaction history</button></li>
+            </ul>
+        </div>
+    
+        <div id="settingsView" v-if="profileView == true">
+            <p style="opacity: 0.5;">edit profile</p>
+            <div class="photo-container">
+                <p style="margin-right: 100px;">Photo</p>
+                <button style="text-align: center; width: 50px; height: 50px; padding: 15px; background-color: lightgray; border: none; font-size: 15px; border-radius: 100%; margin-right: 10px;" id="account">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <input type="file" id="fileInp">
+            </div>
+            <div class="setting-input">
+                <p>Fullname</p>
+                <input id="fullnameProfile" type="text" placeholder="loading...">
+                <p>Username</p>
+                <input id="usernameProfile" type="text" placeholder="loading...">
+                <p>Email</p>
+                <input id="emailProfile" type="email" placeholder="loading...">
+            </div>
+            <button onclick="updateProfileFunction()">Update profile</button>
+        </div>
+
+        <div id="settingsView" v-if="changePasswordView == true">
+            <p style="opacity: 0.5;">change your password</p>
+            <div  style="margin-top: 20px;" class="password-input">
+                <h4>Input your old password</h4>
+                <input type="password" placeholder="Your old password">
+                <h4>New password</h4>
+                <input type="password" placeholder="Create your new password">
+                <h4>Confirm password</h4>
+                <input type="password" placeholder="Confirm password">
+            </div>
+            <button style="margin-top: 20px;" onclick="changePassword()">Change password</button>
+        </div>
+
+        <div id="settingsView" v-if="transactionHistoryView == true">
+            <p style="opacity: 0.5; margin-bottom: 30px;">My Order</p>
+            <div style="border: 1px rgb(0, 0, 0, 0.25) solid; padding: 15px; border-radius: 10px; margin-bottom: 20px;" v-for="(transaction, index) in transactionHistory" :key="index">
+                <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                    <i style="font-size: 25px; color: #0d6b6e; margin-right: 20px;" class="fa-solid fa-bag-shopping"></i>
+                    <p style="margin-right: 20px;">Shopping</p>
+                    <p style="margin-right: 20px; opacity: 0.5;">Aug 23, 2023</p>
+                    <p style="margin-right: 20px; font-size: 12px; color: rgb(0, 132, 0); background-color: rgba(144, 238, 144, 0.319); padding: 3px 10px; border-radius: 100px;">Done</p>
+                    <p>ORD-20230613/XXII/VI/19209/30123</p>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <img style="width: 60px; height: 60px; object-fit: cover; margin-right: 20px;" :src="product.find(product => product.id === transaction[0]).img" alt="">
+                    <div>
+                        <p>{{ product.find(product => product.id === transaction[0]).name }}</p>
+                        <p style="opacity: 0.5;">{{ product.find(product => product.id === transaction[0]).desc }}</p>
+                        <p style="opacity: 0.5;">8 / M</p>
+                    </div>
+                    <div style="margin-right: 10px; margin-left: auto; padding-left: 30px; border-left: 1px rgb(0, 0, 0, 0.25) solid;">
+                        <p style="font-size: 12px; opacity: 0.5;">Total Price</p>
+                        <p>Rp 400.000</p>
+                    </div>
+                </div>
+                <button style="border: none; background-color: transparent; font-size: 15px; opacity: 0.25; margin-bottom: 10px;">+ 2 More Product</button>
+                <div style="display: flex; width: 100%; padding-top: 20px; border-top: 1px rgb(0, 0, 0, 0.1) solid;">
+                    <button style="margin-left: auto; margin-right: 10px; border: none; padding: 10px 20px; background-color: #139094; color: white; border-radius: 5px;">Buy Again</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div> 
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

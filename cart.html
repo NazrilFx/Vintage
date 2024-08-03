@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3"></script>
+    <link rel="stylesheet" href="main.css">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');</style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://kit.fontawesome.com/d4b0adbd70.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <h1 id="loading">Loading...</h1>
+
+<div id="app">
+
+    
+    <nav>
+        <img src="logo.png" alt="logo">
+        <select style="margin-left: 50%" class="leanguage" name="" id="">
+            <option value="">EN</option>
+        </select>
+    </nav>
+
+    <div class="main-cart-container">
+
+        <div class="cart-container">
+
+            <div class="title">
+                <h2>Cart</h2>
+                <p>{{ cart.length }} Items</p>
+            </div>
+
+            <div class="shipping">
+                <p>
+                    <span style="color: grey;"><i class="fa-solid fa-location-dot"></i> Shipping to </span>
+                    <span> kota, Bandung</span>
+                </p>
+            </div>
+
+            <div class="cart-container">
+
+                <div class="cart">
+                    <div v-for="(c, index) in cartDetail" class="product-cart-container">
+
+                        <div class="product-cart">
+                            <img style="width: 150px; height: 150px; object-fit: cover;" :src="c.img" alt="">
+                            <div class="detail">
+                                <p class="title">{{ c.name }}</p>
+                                <p style="margin-bottom: 20px;">8 / M</p>
+                                <h4 class="price" style="margin-top: 50px;">Rp {{ c.price }}</h4>
+                            </div>
+                        </div>
+
+                        <div class="remove-container">
+                            <button  @click="remove(index)" class="remove"><b>Remove</b></button>
+                            <div class="qty-container">
+                                <button class="qty-min">-</button>
+                                <div class="qty-inp">{{ cartQty }}</div>
+                                <button class="qty-plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="box-pemisah"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="order-summary-container">
+            <div style="display: flex;" class="order-summary">
+                <h4>Order Summary</h4>
+                <h4 style="margin-left: auto;" id="total price">{{ totalPrice }}</h4>
+            </div>
+            <div style="opacity: 0.5; display: flex; font-size: 12px; border-bottom: 2px solid rgb(0, 0, 0, 0.25); padding-bottom: 10px;" class="shipping-fee">
+                <div>{{ cart.length }} Items</div>
+                <div style="margin-left: auto;">No include shipping fee</div>
+            </div>
+            <button @click="cartCheckoutButton"><b>Checkout ({{ cart.length }})</b></button>
+        </div>
+
+    </div>
+
+    <footer>
+
+        <div class="ul-container">
+
+            <ul type="none" class="vintage">
+                <li>Vintage</li>
+                <li><a href="">About us</a></li>
+                <li><a href="">Sustainability</a></li>
+                <li><a href="">Blog</a></li>
+                <li><a href="">Advertising</a></li>
+            </ul>
+
+            <ul type="none" class="discover">
+                <li>Discover</li>
+                <li><a href="">How it works</a></li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Info board</a></li>
+                <li><a href="">Mobile apps</a></li>
+            </ul>
+
+            <ul type="none" class="help">
+                <li>Help</li>
+                <li><a href="">Help center</a></li>
+                <li><a href="">Buying</a></li>
+                <li><a href="">Trust & safety</a></li>
+            </ul>
+
+            <ul type="none" class="community">
+                <li>Community</li>
+                <li><a href="">Forum</a></li>
+            </ul>
+
+        </div>
+
+        <div class="social-media-container">
+            <a href=""><i class="fa-brands fa-whatsapp"></i></a>
+            <a href=""><i class="fa-brands fa-instagram"></i></a>
+            <a href=""><i class="fa-brands fa-linkedin"></i></a>
+            <p><i class="fa-regular fa-copyright"></i> Vintage 2023</p>
+        </div>
+
+    </footer>
+    
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
